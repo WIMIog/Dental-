@@ -1,25 +1,64 @@
+# app.py
 from flask import Flask
 from flask_login import LoginManager
 import os
 from models import db, User
 from routes import register_routes
+from dotenv import load_dotenv
+from flask_migrate import Migrate
 
+# ----------------------
+# Load environment variables
+# ----------------------
+load_dotenv()  # loads .env
+USE_SUPABASE = os.getenv("USE_SUPABASE", "False").lower() in ["true", "1", "yes"]
+SUPABASE_DB_URL = os.getenv("SUPABASE_DB_URL")  # postgres URL
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
+
+# ----------------------
+# Flask App Setup
+# ----------------------
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'dev-secret-key'
-
-basedir = os.path.abspath(os.path.dirname(__file__))
-db_path = os.path.join(basedir, 'instance', 'dentist.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
+app.config['SECRET_KEY'] = SECRET_KEY
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Upload folder for admin-managed images
+# ----------------------
+# Database Setup
+# ----------------------
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+if USE_SUPABASE:
+    if not SUPABASE_DB_URL:
+        raise ValueError("SUPABASE_DB_URL must be set if USE_SUPABASE=True")
+    app.config['SQLALCHEMY_DATABASE_URI'] = SUPABASE_DB_URL
+    print("Using Supabase/Postgres DB:", SUPABASE_DB_URL)
+else:
+    # Use SQLite locally
+    instance_folder = os.path.join(basedir, "instance")
+    os.makedirs(instance_folder, exist_ok=True)
+    db_path = os.path.join(instance_folder, "dentist.db")
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
+    print("Using local SQLite DB:", db_path)
+
+# Initialize DB
+db.init_app(app)
+
+# ----------------------
+# Flask-Migrate
+# ----------------------
+migrate = Migrate(app, db)
+
+# ----------------------
+# Upload Folder Setup
+# ----------------------
 UPLOAD_FOLDER = os.path.join(basedir, 'static', 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  # optional: limit 2MB
+app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  # 2MB max upload
 
-db.init_app(app)
-
+# ----------------------
+# Login Manager Setup
+# ----------------------
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'auth.login'
@@ -28,13 +67,20 @@ login_manager.login_view = 'auth.login'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# Register all route blueprints
+# ----------------------
+# Register Blueprints
+# ----------------------
 register_routes(app)
 
-# =========================
-# Start the Flask server
-# =========================
-if __name__ == "__main__":
+# ----------------------
+# Initialize Database (only for SQLite)
+# ----------------------
+if not USE_SUPABASE:
     with app.app_context():
-        db.create_all()  # creates tables if they don't exist
+        db.create_all()
+
+# ----------------------
+# Start the Flask Server
+# ----------------------
+if __name__ == "__main__":
     app.run(debug=True)
