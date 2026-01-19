@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h2>Manage Homepage Content</h2>
+    <a href="{{ url_for('admin.add_home_content') }}" class="btn btn-primary">Add New Content</a>
+</div>
+
+{% if contents %}
+<div class="table-container">
+    <table class="appointments-table">
+        <thead>
+            <tr>
+                <th>Order</th>
+                <th>Section Type</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Image</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for content in contents %}
+            <tr>
+                <td>{{ content.order }}</td>
+                <td>{{ content.section_type }}</td>
+                <td>{{ content.title }}</td>
+                <td>{{ content.description|truncate(50) }}</td>
+                <td>
+                    {% if content.image %}
+                        <img src="{{ url_for('static', filename='uploads/' + content.image) }}" alt="{{ content.title }}" class="table-thumb">
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for('admin.edit_home_content', content_id=content.id) }}" class="btn btn-primary btn-sm">Edit</a>
+                    <form action="{{ url_for('admin.delete_home_content', content_id=content.id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure?');">
+                        <button type="submit" class="btn btn-reject btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p class="no-appointments">No homepage content added yet.</p>
+{% endif %}
+{% endblock %}

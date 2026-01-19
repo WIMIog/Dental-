@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+{% set hero = home_contents | selectattr('section_type', 'equalto', 'hero') | first %}
+{% if hero %}
+<section class="hero"
+         style="background-image: url('{{ url_for('static', filename='uploads/' + hero.image) if hero.image else '' }}');">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1>{{ hero.title }}</h1>
+        <p>{{ hero.description }}</p>
+        <a href="{{ url_for('patient.book') }}" class="btn-primary">
+            Book an Appointment
+        </a>
+    </div>
+</section>
+{% endif %}
+
+<!-- SERVICES -->
+<section class="services" id="services">
+    <div class="container">
+        <h2>Our Services</h2>
+        <div class="service-list">
+            {% for content in home_contents | sort(attribute='order') %}
+                {% if content.section_type == 'service' %}
+                <div class="service-card">
+                    {% if content.image %}
+                        <img src="{{ url_for('static', filename='uploads/' + content.image) }}"
+                             alt="{{ content.title }}">
+                    {% endif %}
+                    <h3>{{ content.title }}</h3>
+                    <p>{{ content.description }}</p>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+    <div class="container">
+        <h2>What Our Patients Say</h2>
+        <div class="testimonial-list">
+            {% for content in home_contents | sort(attribute='order') %}
+                {% if content.section_type == 'testimonial' %}
+                <div class="testimonial-card">
+                    <p>“{{ content.description }}”</p>
+                    <h4>— {{ content.title }}</h4>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+    <div class="container">
+        <h2>Contact Us</h2>
+        <p>
+            Visit our clinic or book your appointment online.
+        </p>
+    </div>
+</section>
+
+{% endblock %}

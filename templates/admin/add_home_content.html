@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h2>Add Homepage Content</h2>
+</div>
+
+<div class="form-container">
+    <form action="{{ url_for('admin.add_home_content') }}" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="section_type">Section Type</label>
+            <select name="section_type" id="section_type" required>
+                <option value="">Select Section</option>
+                <option value="hero">Hero</option>
+                <option value="service">Service</option>
+                <option value="testimonial">Testimonial</option>
+                <option value="logo">Logo</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="title">Title / Name</label>
+            <input type="text" name="title" id="title" placeholder="Enter title or patient name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description / Content</label>
+            <textarea name="description" id="description" placeholder="Enter description" rows="4" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="order">Order (number)</label>
+            <input type="number" name="order" id="order" value="0">
+            <small>Controls display order on homepage (lower = first)</small>
+        </div>
+
+        <div class="form-group">
+            <label for="image">Image (optional)</label>
+            <input type="file" name="image" id="image" accept="image/*">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Add Content</button>
+        <a href="{{ url_for('admin.home_content_list') }}" class="btn btn-secondary" style="margin-left: 10px;">Cancel</a>
+    </form>
+    <div class="preview-container">
+    <h3>Homepage Preview</h3>
+    <div id="preview">
+        <!-- Live preview will appear here -->
+        <div class="hero-preview">
+            <h2 id="preview-title">Title</h2>
+            <p id="preview-description">Description</p>
+            <img id="preview-image" src="" alt="Preview Image" style="max-width: 100%; display:none;">
+        </div>
+    </div>
+</div>
+
+</div>
+<script>
+const titleInput = document.getElementById('title');
+const descriptionInput = document.getElementById('description');
+const imageInput = document.getElementById('image');
+
+const previewTitle = document.getElementById('preview-title');
+const previewDescription = document.getElementById('preview-description');
+const previewImage = document.getElementById('preview-image');
+
+titleInput.addEventListener('input', () => {
+    previewTitle.textContent = titleInput.value || "Title";
+});
+
+descriptionInput.addEventListener('input', () => {
+    previewDescription.textContent = descriptionInput.value || "Description";
+});
+
+imageInput.addEventListener('change', () => {
+    const file = imageInput.files[0];
+    if (file) {
+        previewImage.src = URL.createObjectURL(file);
+        previewImage.style.display = 'block';
+    } else {
+        previewImage.src = '';
+        previewImage.style.display = 'none';
+    }
+});
+
+const sectionSelect = document.getElementById('section_type');
+sectionSelect.addEventListener('change', () => {
+    const section = sectionSelect.value;
+    const preview = document.getElementById('preview');
+
+    if(section === 'hero') {
+        preview.innerHTML = `
+            <div class="hero-preview">
+                <h2 id="preview-title">Title</h2>
+                <p id="preview-description">Description</p>
+                <img id="preview-image" src="" alt="Preview Image" style="max-width:100%; display:none;">
+            </div>
+        `;
+    } else if(section === 'service') {
+        preview.innerHTML = `
+            <div class="service-preview">
+                <h3 id="preview-title">Service Title</h3>
+                <p id="preview-description">Service Description</p>
+                <img id="preview-image" src="" alt="Service Image" style="max-width:100%; display:none;">
+            </div>
+        `;
+    } else if(section === 'testimonial') {
+        preview.innerHTML = `
+            <div class="testimonial-preview">
+                <p id="preview-description">“Testimonial content here”</p>
+                <h4 id="preview-title">Patient Name</h4>
+            </div>
+        `;
+    } else if(section === 'logo') {
+        preview.innerHTML = `
+            <div class="logo-preview">
+                <img id="preview-image" src="" alt="Logo Preview" style="max-width:150px; display:none;">
+            </div>
+        `;
+    }
+
+    // Reassign elements after innerHTML change
+    previewTitle = document.getElementById('preview-title');
+    previewDescription = document.getElementById('preview-description');
+    previewImage = document.getElementById('preview-image');
+});
+
+</script>
+
+{% endblock %}

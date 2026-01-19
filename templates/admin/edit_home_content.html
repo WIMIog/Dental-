@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Edit Homepage Content</h2>
+
+<form action="{{ url_for('admin.edit_home_content', content_id=content.id) }}" method="POST" enctype="multipart/form-data" style="max-width: 600px;">
+    <div class="form-group">
+        <label for="section_type">Section Type</label>
+        <select name="section_type" id="section_type" class="form-control" required>
+            <option value="hero" {% if content.section_type == 'hero' %}selected{% endif %}>Hero</option>
+            <option value="services" {% if content.section_type == 'services' %}selected{% endif %}>Services</option>
+            <option value="testimonials" {% if content.section_type == 'testimonials' %}selected{% endif %}>Testimonials</option>
+            <option value="logo" {% if content.section_type == 'logo' %}selected{% endif %}>Logo/Numbers</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="title">Title / Name</label>
+        <input type="text" name="title" id="title" class="form-control" value="{{ content.title }}" required>
+    </div>
+
+    <div class="form-group">
+        <label for="description">Description / Content</label>
+        <textarea name="description" id="description" class="form-control" rows="4" required>{{ content.description }}</textarea>
+    </div>
+
+    <div class="form-group">
+        <label for="order">Order</label>
+        <input type="number" name="order" id="order" class="form-control" value="{{ content.order }}" required>
+    </div>
+
+    <div class="form-group">
+        <label for="image">Image (optional)</label>
+        <input type="file" name="image" id="image" class="form-control">
+        {% if content.image %}
+            <p>Current image: <img src="{{ url_for('static', filename='uploads/' + content.image) }}" width="100"></p>
+        {% endif %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update Content</button>
+    <a href="{{ url_for('admin.homepage_content') }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

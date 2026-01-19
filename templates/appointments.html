@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="dashboard">
+    <h2>All Appointments</h2>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% if appointments %}
+    <div class="table-container">
+        <table class="appointments-table">
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Message</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appt in appointments %}
+                <tr>
+                    <td>{{ appt.patient.name }}</td>
+                    <td>{{ appt.date }}</td>
+                    <td>{{ appt.time }}</td>
+                    <td>{{ appt.message }}</td>
+                    <td class="{{ appt.status|lower }}">{{ appt.status }}</td>
+                    <td>
+                        {% if appt.status == 'pending' %}
+                        <!-- Approve Form -->
+                        <form method="POST" action="{{ url_for('admin.update_appt_status', appt_id=appt.id) }}" style="display:inline;" onsubmit="return confirm('Approve this appointment?');">
+                            <input type="hidden" name="status" value="approved">
+                            <button type="submit" class="btn approve">Approve</button>
+                        </form>
+
+                        <!-- Reject Form -->
+                        <form method="POST" action="{{ url_for('admin.update_appt_status', appt_id=appt.id) }}" style="display:inline;" onsubmit="return confirm('Reject this appointment?');">
+                            <input type="hidden" name="status" value="rejected">
+                            <button type="submit" class="btn reject">Reject</button>
+                        </form>
+                        {% else %}
+                        <span>-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="no-appointments">No appointments yet.</p>
+    {% endif %}
+</section>
+
+<!-- Styles -->
+<style>
+/* Flash Messages */
+.flash-messages { margin-bottom: 1rem; }
+.flash { padding: 10px 15px; border-radius: 5px; margin-bottom: 5px; font-weight: bold; }
+.flash.success { background-color: #d1fae5; color: #065f46; }
+.flash.danger { background-color: #fee2e2; color: #b91c1c; }
+
+/* Table Styles */
+.table-container { overflow-x: auto; margin-top: 1rem; }
+.appointments-table { width: 100%; border-collapse: collapse; }
+.appointments-table th, .appointments-table td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+.appointments-table th { background-color: #0ea5a4; color: white; }
+
+/* Status Colors */
+td.pending { background-color: #fef3c7; }
+td.approved { background-color: #d1fae5; }
+td.rejected { background-color: #fee2e2; }
+
+/* Buttons */
+.btn.approve { background-color: #10b981; color: #fff; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer; }
+.btn.reject { background-color: #ef4444; color: #fff; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer; }
+.btn.approve:hover { background-color: #059669; }
+.btn.reject:hover { background-color: #b91c1c; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .appointments-table th, .appointments-table td { padding: 8px; font-size: 14px; }
+}
+</style>
+{% endblock %}

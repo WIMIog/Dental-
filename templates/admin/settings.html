@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Site Settings</h2>
+
+<form method="POST">
+    <label>Clinic Name:</label><br>
+    <input type="text" name="clinic_name" value="{{ settings.clinic_name }}" required><br><br>
+
+    <label>Working Hours:</label><br>
+    <input type="text" name="working_hours" value="{{ settings.working_hours }}" required><br><br>
+
+    <button type="submit" class="btn">Save Changes</button>
+</form>
+{% endblock %}

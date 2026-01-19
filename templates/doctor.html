@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="dashboard">
+    <h2>Doctor Dashboard</h2>
+
+    <div class="stats-cards">
+        <div class="card total">
+            <h3>Total</h3>
+            <p>{{ appointments|length }}</p>
+        </div>
+        <div class="card pending">
+            <h3>Pending</h3>
+            <p>{{ appointments|selectattr("status", "equalto", "pending")|list|length }}</p>
+        </div>
+        <div class="card approved">
+            <h3>Approved</h3>
+            <p>{{ appointments|selectattr("status", "equalto", "approved")|list|length }}</p>
+        </div>
+        <div class="card rejected">
+            <h3>Rejected</h3>
+            <p>{{ appointments|selectattr("status", "equalto", "rejected")|list|length }}</p>
+        </div>
+    </div>
+
+    {% if appointments %}
+    <div class="table-container">
+        <table class="appointments-table">
+            <thead>
+                <tr>
+                    <th>Patient</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Message</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appt in appointments %}
+                <tr>
+                    <td>{{ appt.patient.name }}</td>
+                    <td>{{ appt.date }}</td>
+                    <td>{{ appt.time }}</td>
+                    <td>{{ appt.message }}</td>
+                    <td class="{{ appt.status|lower }}">{{ appt.status }}</td>
+                    <td>
+                        {% if appt.status == 'pending' %}
+                        <a class="btn approve" href="{{ url_for('doctor.update_status', appt_id=appt.id, status='approved') }}">Approve</a>
+                        <a class="btn reject" href="{{ url_for('doctor.update_status', appt_id=appt.id, status='rejected') }}">Reject</a>
+                        {% else %}
+                        <span>-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="no-appointments">No appointments yet.</p>
+    {% endif %}
+</section>
+{% endblock %}

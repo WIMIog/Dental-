@@ -1,0 +1,76 @@
+<!-- File: /templates/admin/dashboard.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<section class="dashboard">
+    <h2>Admin Dashboard</h2>
+
+    <!-- Stats Cards -->
+    <div class="stats-cards">
+        <div class="card total">
+            <h3>Total Users</h3>
+            <p>{{ users }}</p>
+        </div>
+        <div class="card total">
+            <h3>Total Appointments</h3>
+            <p>{{ appointments }}</p>
+        </div>
+        <div class="card pending">
+            <h3>Pending</h3>
+            <p>{{ pending }}</p>
+        </div>
+        <div class="card approved">
+            <h3>Approved</h3>
+            <p>{{ approved }}</p>
+        </div>
+        <div class="card rejected">
+            <h3>Rejected</h3>
+            <p>{{ rejected }}</p>
+        </div>
+    </div>
+
+    <!-- Admin Links -->
+    <div class="admin-links">
+        <a href="{{ url_for('admin.users') }}" class="btn">Manage Users</a>
+        <a href="{{ url_for('admin.appointments') }}" class="btn">Manage Appointments</a>
+        <a href="{{ url_for('admin.settings') }}" class="btn">Site Settings</a>
+          <a href="{{ url_for('admin.home_content_list') }}" class="btn btn-primary" style="margin-top: 1rem;">
+        Manage Home Sections
+    </a>
+    </div>
+</section>
+
+<!-- Optional styling for cards and buttons -->
+<style>
+.stats-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.card {
+    flex: 1 1 150px;
+    background-color: #f3f8f8;
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+.card h3 { margin-bottom: 0.5rem; color: #0ea5a4; }
+.card p { font-size: 1.5rem; font-weight: bold; }
+.card.pending { background-color: #fef3c7; }
+.card.approved { background-color: #d1fae5; }
+.card.rejected { background-color: #fee2e2; }
+
+.admin-links .btn {
+    display: inline-block;
+    margin-right: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #0ea5a4;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+}
+</style>
+{% endblock %}

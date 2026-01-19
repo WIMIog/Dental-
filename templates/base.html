@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    {% set logo = home_contents | selectattr('section_type', 'equalto', 'logo') | first %}
+
+    <title>
+        {% if logo and logo.title %}
+            {{ logo.title }}
+        {% else %}
+            Dentist Clinic
+        {% endif %}
+    </title>
+
+    <meta name="description" content="Professional dental clinic offering quality oral healthcare, appointments, and patient services.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- HEADER / NAVBAR -->
+<header class="navbar" role="banner">
+    <div class="container navbar-container">
+
+        <!-- LOGO -->
+        <div class="logo-container">
+            <a href="{{ url_for('auth.home') }}">
+                {% if logo and logo.image %}
+                    <img src="{{ url_for('static', filename='uploads/' + logo.image) }}"
+                         alt="{{ logo.title if logo and logo.title else 'Dental Clinic Logo' }}"
+                         class="logo-img">
+                {% else %}
+                    <span class="logo-text">Odonto Stomologie</span>
+                {% endif %}
+            </a>
+        </div>
+
+        <!-- MOBILE MENU TOGGLE (CSS/JS READY) -->
+        <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">
+            ☰
+        </button>
+
+        <!-- NAVIGATION -->
+        <nav class="nav-links" role="navigation">
+            <a href="{{ url_for('auth.home') }}">Home</a>
+            <a href="{{ url_for('auth.home') }}#services">Services</a>
+            <a href="{{ url_for('patient.book') }}">Book Appointment</a>
+            <a href="{{ url_for('auth.home') }}#contact">Contact</a>
+
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('patient.my_appointments') }}">My Appointments</a>
+                <a href="{{ url_for('auth.logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('auth.login') }}">Login</a>
+                <a href="{{ url_for('auth.register') }}">Register</a>
+            {% endif %}
+
+            {% if current_user.is_authenticated and current_user.role == 'doctor' %}
+                <a href="{{ url_for('doctor.doctor_dashboard') }}" class="role-link">
+                    Doctor Dashboard
+                </a>
+            {% endif %}
+
+            {% if current_user.is_authenticated and current_user.role == 'admin' %}
+                <a href="{{ url_for('admin.dashboard') }}" class="role-link">
+                    Admin Panel
+                </a>
+            {% endif %}
+        </nav>
+
+    </div>
+</header>
+
+<!-- MAIN -->
+<main class="container" role="main">
+
+    <!-- FLASH MESSAGES -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <section class="flash-messages" aria-live="polite">
+                {% for category, message in messages %}
+                    <div class="alert {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </section>
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+</main>
+
+<!-- FOOTER -->
+<footer class="footer" role="contentinfo">
+    <div class="container footer-container">
+        <p>
+            &copy; 2026
+            {{ logo.title if logo and logo.title else 'Odonto Stomologie' }}.
+            All rights reserved.
+        </p>
+    </div>
+</footer>
+<script>
+document.querySelector('.menu-toggle')
+?.addEventListener('click',()=>{
+  document.querySelector('.navbar-container').classList.toggle('open');
+});
+</script>
+
+</body>
+</html>

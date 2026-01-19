@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container" style="max-width: 950px; margin: 40px auto; padding: 30px; background-color: #fefefe; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.1);">
+
+    <h2 style="text-align:center; margin-bottom: 30px; color: #333;">Doctor Dashboard</h2>
+
+    <!-- SECTION 1: My Appointments -->
+    <h3 style="margin-bottom: 15px; color: #333;">My Appointments</h3>
+    {% if my_appointments %}
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px;">
+        <thead style="background-color: #007bff; color: white;">
+            <tr>
+                <th>ID</th>
+                <th>Patient</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Message</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appt in my_appointments %}
+            <tr style="text-align: center; 
+                       {% if appt.status == 'pending' %}background-color: #fff3cd;
+                       {% elif appt.status == 'approved' %}background-color: #d4edda;
+                       {% elif appt.status == 'rejected' %}background-color: #f8d7da;{% endif %}">
+                <td>{{ appt.id }}</td>
+                <td>{{ appt.patient_full_name or appt.patient.name }}</td>
+                <td>{{ appt.date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ appt.time.strftime('%H:%M') }}</td>
+                <td style="font-weight: bold;">{{ appt.status.capitalize() }}</td>
+                <td>{{ appt.message or '-' }}</td>
+                <td>
+                    {% if appt.status == 'pending' %}
+                        <form action="{{ url_for('doctor.update_appt_status', appt_id=appt.id) }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="status" value="approved">
+                            <button type="submit" style="padding:5px 10px; border:none; border-radius:5px; background-color:#28a745; color:white; cursor:pointer;">Approve</button>
+                        </form>
+                        <form action="{{ url_for('doctor.update_appt_status', appt_id=appt.id) }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="status" value="rejected">
+                            <button type="submit" style="padding:5px 10px; border:none; border-radius:5px; background-color:#dc3545; color:white; cursor:pointer;">Reject</button>
+                        </form>
+                    {% else %}
+                        <span style="color:#555;">-</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="text-align:center; color:#555;">No appointments assigned yet.</p>
+    {% endif %}
+
+    <!-- SECTION 2: Unassigned Appointments -->
+    <h3 style="margin-bottom: 15px; color: #333;">Unassigned Appointments</h3>
+    {% if unassigned_appointments %}
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead style="background-color: #6c757d; color: white;">
+            <tr>
+                <th>ID</th>
+                <th>Patient</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Message</th>
+                <th>Assign</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appt in unassigned_appointments %}
+            <tr style="text-align: center; background-color: #e2e3e5;">
+                <td>{{ appt.id }}</td>
+                <td>{{ appt.patient_full_name or appt.patient.name }}</td>
+                <td>{{ appt.date.strftime('%Y-%m-%d') }}</td>
+                <td>{{ appt.time.strftime('%H:%M') }}</td>
+                <td style="font-weight:bold;">{{ appt.status.capitalize() }}</td>
+                <td>{{ appt.message or '-' }}</td>
+                <td>
+                    <form action="{{ url_for('doctor.update_appt_status', appt_id=appt.id) }}" method="POST">
+                        <input type="hidden" name="status" value="approved">
+                        <button type="submit" style="padding:5px 10px; border:none; border-radius:5px; background-color:#007bff; color:white; cursor:pointer;">Assign & Approve</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="text-align:center; color:#555;">No unassigned appointments available.</p>
+    {% endif %}
+
+</div>
+{% endblock %}
