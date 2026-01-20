@@ -16,12 +16,19 @@
     <meta name="description" content="Professional dental clinic offering quality oral healthcare, appointments, and patient services.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- ================= FAVICON ================= -->
+    {% if logo and logo.image %}
+        <link rel="icon" type="image/png" href="{{ url_for('static', filename='uploads/' + logo.image) }}">
+    {% else %}
+        <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    {% endif %}
+
     <!-- CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
-<!-- HEADER / NAVBAR -->
+<!-- ================= HEADER / NAVBAR ================= -->
 <header class="navbar" role="banner">
     <div class="container navbar-container">
 
@@ -38,7 +45,7 @@
             </a>
         </div>
 
-        <!-- MOBILE MENU TOGGLE (CSS/JS READY) -->
+        <!-- MOBILE MENU TOGGLE -->
         <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">
             ☰
         </button>
@@ -59,22 +66,18 @@
             {% endif %}
 
             {% if current_user.is_authenticated and current_user.role == 'doctor' %}
-                <a href="{{ url_for('doctor.doctor_dashboard') }}" class="role-link">
-                    Doctor Dashboard
-                </a>
+                <a href="{{ url_for('doctor.doctor_dashboard') }}" class="role-link">Doctor Dashboard</a>
             {% endif %}
 
             {% if current_user.is_authenticated and current_user.role == 'admin' %}
-                <a href="{{ url_for('admin.dashboard') }}" class="role-link">
-                    Admin Panel
-                </a>
+                <a href="{{ url_for('admin.dashboard') }}" class="role-link">Admin Panel</a>
             {% endif %}
         </nav>
 
     </div>
 </header>
 
-<!-- MAIN -->
+<!-- ================= MAIN ================= -->
 <main class="container" role="main">
 
     <!-- FLASH MESSAGES -->
@@ -91,21 +94,37 @@
     {% block content %}{% endblock %}
 </main>
 
-<!-- FOOTER -->
+<!-- ================= FOOTER ================= -->
 <footer class="footer" role="contentinfo">
     <div class="container footer-container">
         <p>
             &copy; 2026
-            {{ logo.title if logo and logo.title else 'Odonto Stomologie' }}.
-            All rights reserved.
+            {{ logo.title if logo and logo.title else 'Odonto Stomologie' }}. All rights reserved.
         </p>
     </div>
 </footer>
+
+<!-- ================= BACK-TO-TOP BUTTON ================= -->
+<button id="backToTop" title="Back to Top">↑</button>
+
+<!-- ================= CHAT BUTTON ================= -->
+<a href="https://wa.me/250XXXXXXXXX" target="_blank" id="chatButton" title="Chat with us">💬</a>
+
+<!-- ================= SCRIPTS ================= -->
 <script>
-document.querySelector('.menu-toggle')
-?.addEventListener('click',()=>{
-  document.querySelector('.navbar-container').classList.toggle('open');
-});
+    // MOBILE MENU TOGGLE
+    document.querySelector('.menu-toggle')?.addEventListener('click', () => {
+        document.querySelector('.navbar-container').classList.toggle('open');
+    });
+
+    // BACK-TO-TOP BUTTON
+    const backToTop = document.getElementById('backToTop');
+    window.addEventListener('scroll', () => {
+        backToTop.style.display = window.scrollY > 300 ? 'block' : 'none';
+    });
+    backToTop.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 </script>
 
 </body>

@@ -2,68 +2,113 @@
 
 {% block content %}
 
-<!-- HERO SECTION -->
+<!-- ================= HERO SECTION ================= -->
 {% set hero = home_contents | selectattr('section_type', 'equalto', 'hero') | first %}
 {% if hero %}
-<section class="hero"
-         style="background-image: url('{{ url_for('static', filename='uploads/' + hero.image) if hero.image else '' }}');">
+<section class="hero" style="background-image: url('{{ url_for('static', filename='uploads/' + hero.image) if hero.image else '' }}');">
     <div class="hero-overlay"></div>
     <div class="hero-content">
         <h1>{{ hero.title }}</h1>
         <p>{{ hero.description }}</p>
-        <a href="{{ url_for('patient.book') }}" class="btn-primary">
-            Book an Appointment
-        </a>
+        <div class="hero-buttons">
+            <a href="{{ url_for('patient.book') }}" class="btn-primary btn-hero">Book an Appointment</a>
+            <a href="#services" class="btn-secondary btn-hero">Our Services</a>
+        </div>
     </div>
 </section>
 {% endif %}
 
-<!-- SERVICES -->
+<!-- ================= SERVICES ================= -->
 <section class="services" id="services">
-    <div class="container">
-        <h2>Our Services</h2>
-        <div class="service-list">
-            {% for content in home_contents | sort(attribute='order') %}
-                {% if content.section_type == 'service' %}
-                <div class="service-card">
-                    {% if content.image %}
-                        <img src="{{ url_for('static', filename='uploads/' + content.image) }}"
-                             alt="{{ content.title }}">
-                    {% endif %}
+    <h2>Our Services</h2>
+    <div class="service-list">
+        {% for content in home_contents | sort(attribute='order') %}
+            {% if content.section_type == 'service' %}
+            <div class="service-card">
+                {% if content.image %}
+                <div class="service-img" style="background-image: url('{{ url_for('static', filename='uploads/' + content.image) }}');"></div>
+                {% endif %}
+                <div class="service-info">
                     <h3>{{ content.title }}</h3>
                     <p>{{ content.description }}</p>
+                    <a href="{{ url_for('patient.book') }}" class="btn-secondary">Book Now</a>
                 </div>
-                {% endif %}
-            {% endfor %}
-        </div>
+            </div>
+            {% endif %}
+        {% endfor %}
     </div>
 </section>
 
-<!-- TESTIMONIALS -->
-<section class="testimonials">
-    <div class="container">
-        <h2>What Our Patients Say</h2>
-        <div class="testimonial-list">
-            {% for content in home_contents | sort(attribute='order') %}
-                {% if content.section_type == 'testimonial' %}
-                <div class="testimonial-card">
-                    <p>“{{ content.description }}”</p>
-                    <h4>— {{ content.title }}</h4>
-                </div>
-                {% endif %}
-            {% endfor %}
-        </div>
+<!-- ================= TESTIMONIALS ================= -->
+<section class="testimonials" id="testimonials">
+    <h2>What Our Patients Say</h2>
+    <div class="testimonial-list">
+        {% for content in home_contents | sort(attribute='order') %}
+            {% if content.section_type == 'testimonial' %}
+            <div class="testimonial-card">
+                <p>“{{ content.description }}”</p>
+                <h4>— {{ content.title }}</h4>
+            </div>
+            {% endif %}
+        {% endfor %}
     </div>
 </section>
 
-<!-- CONTACT -->
+<!-- ================= CONTACT ================= -->
 <section class="contact" id="contact">
-    <div class="container">
-        <h2>Contact Us</h2>
-        <p>
-            Visit our clinic or book your appointment online.
-        </p>
-    </div>
+    <h2>Contact Us</h2>
+    <p>Visit our clinic or book your appointment online.</p>
+    <a href="{{ url_for('patient.book') }}" class="btn-contact">Book an Appointment</a>
 </section>
+
+<!-- ================= INLINE STYLES / ANIMATIONS ================= -->
+<style>
+/* HERO */
+.hero { height: 100vh; background-size: cover; background-position: center; position: relative; display:flex; align-items:center; justify-content:center; text-align:center; color:#fff; }
+.hero-overlay { position:absolute; inset:0; background: rgba(0,0,0,0.4); }
+.hero-content { position:relative; z-index:2; max-width:900px; padding:0 1rem; animation:fadeIn 1s ease-in-out; }
+.hero-content h1 { font-size:3rem; font-weight:700; margin-bottom:1rem; text-shadow:2px 2px 6px rgba(0,0,0,0.5); }
+.hero-content p { font-size:1.25rem; margin-bottom:2rem; }
+.hero-buttons a { margin:0 0.5rem; }
+
+/* SERVICES */
+.services { padding:6rem 2rem 4rem; background:#f8f9fa; }
+.services h2 { text-align:center; margin-bottom:3rem; color:#0077b6; font-size:2.25rem; }
+.service-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:2rem; }
+.service-card { background:#fff; border-radius:16px; box-shadow:0 8px 20px rgba(0,0,0,0.1); overflow:hidden; transition:0.3s; text-align:center; }
+.service-card:hover { transform:translateY(-10px); box-shadow:0 12px 25px rgba(0,0,0,0.15); }
+.service-img { width:100%; height:220px; background-size:cover; background-position:center; }
+.service-info { padding:1.5rem; }
+.service-info h3 { color:#0077b6; margin-bottom:1rem; font-size:1.2rem; }
+.service-info p { margin-bottom:1rem; }
+.btn-secondary { background:#00b4d8; color:#fff; padding:0.5rem 1.5rem; border-radius:50px; transition:0.3s; display:inline-block; }
+.btn-secondary:hover { background:#0077b6; transform:scale(1.05); }
+
+/* TESTIMONIALS */
+.testimonials { padding:6rem 2rem; background:linear-gradient(120deg, #e0f7fa, #ffffff); }
+.testimonials h2 { text-align:center; margin-bottom:3rem; color:#0077b6; font-size:2.25rem; }
+.testimonial-list { display:flex; gap:1.5rem; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:1rem; }
+.testimonial-card { min-width:300px; scroll-snap-align:start; background:#fff; padding:2rem; border-radius:16px; box-shadow:0 8px 20px rgba(0,0,0,0.1); position:relative; transition:0.3s; }
+.testimonial-card:hover { transform:translateY(-4px); box-shadow:0 12px 25px rgba(0,0,0,0.15); }
+.testimonial-card::before { content:"“"; font-size:3rem; position:absolute; top:10px; left:10px; color:#00b4d8; }
+.testimonial-card p { font-style:italic; }
+
+/* CONTACT */
+.contact { padding:6rem 2rem; background:#e0f7fa; text-align:center; border-radius:16px; }
+.contact h2 { color:#0077b6; margin-bottom:1rem; font-size:2rem; }
+.contact p { font-size:1.2rem; }
+.btn-contact { background:#0077b6; color:#fff; padding:0.75rem 2rem; border-radius:50px; transition:0.3s; display:inline-block; margin-top:1rem; }
+.btn-contact:hover { background:#023e8a; transform:scale(1.05); }
+
+/* ANIMATIONS */
+@keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+/* RESPONSIVE */
+@media(max-width:768px){
+    .hero h1 { font-size:2.2rem; }
+    .hero p { font-size:1rem; }
+    .service-list { grid-template-columns:1fr; }
+}
+</style>
 
 {% endblock %}
