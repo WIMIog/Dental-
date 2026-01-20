@@ -36,9 +36,11 @@ def register():
 @auth_bp.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form['email']
+        email = request.form['email'].strip().lower()
         password = request.form['password']
+
         user = User.query.filter_by(email=email).first()
+
         if user and check_password_hash(user.password, password):
             login_user(user)
             flash("Logged in successfully", "success")
@@ -46,6 +48,7 @@ def login():
         else:
             flash("Invalid credentials", "danger")
             return redirect(url_for('auth.login'))
+
     return render_template("login.html")
 
 # ---------------- LOGOUT -----------------
